@@ -44,6 +44,8 @@ class AuthTest extends TestCase
 
     public function test_login_is_rate_limited_after_five_attempts(): void
     {
+        // Ohne eingefrorene Zeit kippt der Test, wenn die sechs Anfragen über eine Minutengrenze laufen.
+        $this->freezeTime();
         User::factory()->create(['email' => 'anna@freise.de']);
 
         for ($i = 0; $i < 5; $i++) {
