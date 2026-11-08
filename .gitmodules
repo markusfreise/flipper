@@ -1,0 +1,3 @@
+[submodule "resources/batcave-ui"]
+	path = resources/batcave-ui
+	url = git@github.com:markusfreise/batcave-ui.git
