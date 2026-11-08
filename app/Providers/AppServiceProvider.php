@@ -7,6 +7,7 @@ use App\Services\Claude\ClaudeClient;
 use App\Services\Claude\FixtureLlmClient;
 use App\Services\Rembg\RembgClient;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Foundation\DevCommands;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -32,6 +33,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // composer run dev: Worker wie in prod, KI-Schritte (default) vor Bildern (images).
+        DevCommands::artisan('queue:listen --queue=default,images --tries=1 --timeout=0', 'queue');
+
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)->by(strtolower((string) $request->input('email')).'|'.$request->ip())
             ->response(fn () => response()->json(['message' => 'Zu viele Versuche. Bitte eine Minute warten.'], 429)));
     }

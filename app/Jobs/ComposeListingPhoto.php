@@ -18,7 +18,13 @@ class ComposeListingPhoto implements ShouldQueue
 
     public int $timeout = 300;
 
-    public function __construct(public string $photoId) {}
+    /** Eigene Queue: Der Worker nimmt "default" (KI-Schritte) immer zuerst, Bilder laufen dazwischen. */
+    public const QUEUE = 'images';
+
+    public function __construct(public string $photoId)
+    {
+        $this->onQueue(self::QUEUE);
+    }
 
     public function handle(PhotoComposer $composer): void
     {
