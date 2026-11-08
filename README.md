@@ -32,7 +32,7 @@ npm test           # Vitest
 ## Betrieb
 
 - Einrichtung Batcave: `./_bootstrap/bootstrap-batcave.sh`, danach Cloudflare Public Hostname setzen.
-- Deploy: Push auf `main` (Webhook) oder `ssh root@192.168.2.114 /usr/local/bin/flipper-deploy.sh`.
+- Deploy: Push auf `main` (Webhook) oder `ssh web /usr/local/bin/flipper-deploy.sh` (Alias in ~/.ssh/config, ProxyJump batcave).
 - Konten: `php8.3 artisan user:create "Name" mail@…`, Passwort neu: `user:password mail@…`.
 - Alte Inserate (> 90 Tage) löscht der Scheduler nachts.
 

@@ -186,7 +186,7 @@ Wie im Original-PRD (Login, Liste, Wizard mit Schrittleiste und vier Karten, Feh
 
 LXC 114 (nginx, php8.3-fpm), Postgres auf 110, rembg auf 111, Caddy + cloudflared auf 113. Einrichtung: `_bootstrap/bootstrap-batcave.sh` (idempotent, fail-closed). Einziger manueller Schritt: Cloudflare Public Hostname `flipper.croeso.de` → `HTTPS 192.168.2.113:443`, Origin Server Name `flipper.croeso.de`.
 
-Deploy: `/usr/local/bin/flipper-deploy.sh` — baut in `/srv/www/flipper-releases/<sha>`, `pg_dump` vor `migrate`, schaltet den Symlink `/srv/www/flipper` erst nach Erfolg um, Smoke-Test mit Rollback, ntfy OK/FAILED. Auslöser: GitHub-Webhook `POST /deploy-hook` (HMAC) schreibt eine Trigger-Datei, `flipper-deploy.path` startet den Deploy als root.
+Deploy: `/usr/local/bin/flipper-deploy.sh` — baut in `/var/www/flipper-releases/<sha>`, `pg_dump` vor `migrate`, schaltet den Symlink `/var/www/flipper` erst nach Erfolg um, Smoke-Test mit Rollback, ntfy OK/FAILED. Auslöser: GitHub-Webhook `POST /deploy-hook` (HMAC) schreibt eine Trigger-Datei, `flipper-deploy.path` startet den Deploy als root.
 
 Kosten: ≈ 3–8 Cent pro Inserat. Monatliches Limit im Anthropic-Dashboard setzen (TODO-05).
 
