@@ -46,7 +46,7 @@ fi
 if command -v docker >/dev/null && ! docker info >/dev/null 2>&1; then
   echo "Docker läuft nicht, rembg wird übersprungen (Docker Desktop starten und Skript erneut ausführen)." >&2
 elif command -v docker >/dev/null && ! docker ps --format '{{.Names}}' | grep -q '^flipper-rembg$'; then
-  docker run -d --name flipper-rembg --platform linux/amd64 -p 7010:7000 -v flipper-rembg:/root/.u2net \
+  docker run -d --name flipper-rembg --platform linux/amd64 -p 7010:7000 -v flipper-rembg:/root/.u2net -e U2NET_HOME=/root/.u2net \
     --restart unless-stopped danielgatis/rembg:latest s --host 0.0.0.0 --port 7000 || true
 fi
 
