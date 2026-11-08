@@ -1,0 +1,10 @@
+[Unit]
+Description=Flohmarkt Scheduler (minütlich)
+
+[Timer]
+OnCalendar=*-*-* *:*:00
+AccuracySec=1s
+Persistent=true
+
+[Install]
+WantedBy=timers.target

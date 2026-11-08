@@ -1,0 +1,4 @@
+flohmarkt.croeso.de {
+	import ${CADDY_SNIPPET}
+	reverse_proxy 192.168.2.114:80
+}

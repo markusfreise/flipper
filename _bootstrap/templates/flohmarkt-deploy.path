@@ -1,0 +1,9 @@
+[Unit]
+Description=Flohmarkt Deploy-Trigger (vom GitHub-Webhook geschrieben)
+
+[Path]
+PathChanged=/srv/www/flohmarkt-shared/storage/app/private/deploy/trigger
+Unit=flohmarkt-deploy.service
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,15 @@
+# Service-Block für den Docker-Compose-Stack auf LXC 111.
+services:
+  rembg:
+    image: danielgatis/rembg:latest
+    command: s --host 0.0.0.0 --port 7000
+    ports:
+      - "7000:7000"
+    volumes:
+      - rembg-models:/root/.u2net
+    environment:
+      - U2NET_HOME=/root/.u2net
+    restart: unless-stopped
+
+volumes:
+  rembg-models:

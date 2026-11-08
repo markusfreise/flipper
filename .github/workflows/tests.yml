@@ -1,0 +1,39 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: flohmarkt_app
+          POSTGRES_PASSWORD: secret
+          POSTGRES_DB: flohmarkt_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DB_HOST: 127.0.0.1
+      DB_USERNAME: flohmarkt_app
+      DB_PASSWORD: secret
+    steps:
+      # batcave-ui (privates Submodul) wird für PHPUnit und Vitest nicht gebraucht.
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: gd, pgsql, pdo_pgsql, zip, intl, exif
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: composer install --no-interaction --no-progress
+      - run: cp .env.example .env && php artisan key:generate
+      - run: php artisan test
+      - run: npm ci
+      - run: npm test
