@@ -16,7 +16,7 @@ Stand: 2026-11-08, v1.0.0 (live)
 | TASK-08 | CheckPhotos | erledigt, Auflösungsprüfung (< 2000 px) serverseitig |
 | TASK-09 | RembgClient + RemoveBackground | erledigt, gegen echten `rembg s` getestet |
 | TASK-10 | PhotoComposer | erledigt |
-| TASK-11 | ResearchProduct | erledigt, `web_search_20260209`, max. 5 Suchen |
+| TASK-11 | ResearchProduct | erledigt, `web_search_20260209`, max. 20 Suchen (5 reichten nicht, siehe Abweichung 10) |
 | TASK-12 | PriceAdvisor + ShippingAdvisor | erledigt |
 | TASK-13 | WriteListingText + revise | erledigt |
 | TASK-14 | ZIP, Downloads, Prune | erledigt |
@@ -37,6 +37,7 @@ Stand: 2026-11-08, v1.0.0 (live)
 7. **Deploy** baut in Release-Verzeichnissen unter `/var/www` und schaltet einen Symlink um (fail-closed). Der Webhook schreibt nur eine Trigger-Datei, systemd (`flipper-deploy.path`) startet das Skript als root. So braucht www-data kein sudo.
 8. **Verpackungszuschlag** 1 cm/Seite + 200 g: Mit mehr wäre Luna (Referenzlauf: Päckchen S) in Päckchen M gerutscht.
 9. **Bilder werden direkt nach dem Freistellen komponiert**, nicht erst nach den Antworten. Spart Wartezeit, Schritt 2 zeigt schon die fertigen Freisteller.
+10. **Websuche bis 20 Suchen statt 5.** `web_search_20260209` startet Suchen gebündelt aus Code heraus, jede zählt gegen das Limit. Mit 5 war es aufgebraucht, bevor Claude Verkaufspreise suchen konnte („Server tool use limit exceeded"), das Inserat hatte dann keinen Preis (gefunden am 2026-11-08 mit der DJI Osmo 360). Kosten höchstens etwa 20 Cent pro Inserat.
 
 ## Betrieb auf der Batcave (Stand Live-Gang 2026-11-08)
 

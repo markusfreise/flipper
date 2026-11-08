@@ -6,7 +6,7 @@ return [
         // PRD nannte claude-sonnet-4-5; das Modell wird am 30.11.2026 abgeschaltet.
         // Default ist daher der aktuelle Sonnet, per .env überschreibbar.
         'model' => env('ANTHROPIC_MODEL', 'claude-sonnet-5-5'),
-        'max_web_searches' => (int) env('ANTHROPIC_MAX_WEB_SEARCHES', 5),
+        'max_web_searches' => (int) env('ANTHROPIC_MAX_WEB_SEARCHES', 20),
         'timeout' => 180.0,
     ],
 
