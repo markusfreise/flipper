@@ -18,7 +18,7 @@ async function logout() {
                 <span class="site-header__logo" aria-hidden="true">
                     <svg viewBox="0 0 32 32" width="28" height="28"><rect width="32" height="32" rx="7" fill="currentColor" /><path d="M9 13h14l-1.5 11h-11z" fill="#fff" /><path d="M12 13a4 4 0 0 1 8 0" stroke="#fff" stroke-width="2" fill="none" /></svg>
                 </span>
-                Flohmarkt
+                Flipper
             </RouterLink>
             <div class="site-header__user">
                 <span class="site-header__name">{{ auth.user.name }}</span>

@@ -113,7 +113,7 @@ class ListingFlow
         });
 
         if ($listing) {
-            Ntfy::send('Flohmarkt: Job fehlgeschlagen', "Inserat {$listingId}: {$message}", 'high');
+            Ntfy::send('Flipper: Job fehlgeschlagen', "Inserat {$listingId}: {$message}", 'high');
         }
     }
 

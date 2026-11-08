@@ -25,7 +25,7 @@ class ResearchProduct extends ListingJob
             ResearchPrompt::system(),
             [['type' => 'text', 'text' => ResearchPrompt::instruction($listing->product)]],
             ResearchPrompt::schema(),
-            webSearches: max(1, (int) config('flohmarkt.anthropic.max_web_searches')),
+            webSearches: max(1, (int) config('flipper.anthropic.max_web_searches')),
         );
 
         $research = $result['data'];

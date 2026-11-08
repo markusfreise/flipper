@@ -29,9 +29,9 @@ class ListingResource extends JsonResource
             'text' => $this->text,
             'ebay_attributes' => $this->text ? ListingExport::ebayAttributes($this->resource) : [],
             'text_revisions' => $this->text_revisions,
-            'revisions_left' => max(0, config('flohmarkt.max_text_revisions') - $this->text_revisions),
+            'revisions_left' => max(0, config('flipper.max_text_revisions') - $this->text_revisions),
             'last_error' => $this->last_error,
-            'pickup_location' => config('flohmarkt.pickup_location'),
+            'pickup_location' => config('flipper.pickup_location'),
             'zip_url' => $this->zip_path ? "{$base}/download.zip" : null,
             'cover_url' => $cover ? ($cover->final_path ? "{$base}/photos/{$cover->id}/final.jpg" : "{$base}/photos/{$cover->id}/thumb.jpg") : null,
             'photos' => $photos->map(fn (ListingPhoto $p) => [

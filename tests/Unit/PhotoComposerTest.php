@@ -11,7 +11,7 @@ class PhotoComposerTest extends TestCase
     {
         $cutout = __DIR__.'/../Fixtures/luna/cutout.png';
         $before = md5_file($cutout);
-        $out = sys_get_temp_dir().'/flohmarkt-compose-'.uniqid().'.jpg';
+        $out = sys_get_temp_dir().'/flipper-compose-'.uniqid().'.jpg';
 
         (new PhotoComposer)->compose($cutout, $out);
 

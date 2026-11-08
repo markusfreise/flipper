@@ -6,7 +6,7 @@ Stand: 2026-11-08, v1.0.0
 
 | ID | Titel | Stand |
 |---|---|---|
-| TASK-01 | Repo & Umgebung provisionieren | ✅ Bootstrap-Skripte im Repo. ⏳ GitHub-Repo `markusfreise/flohmarkt` anlegen und pushen |
+| TASK-01 | Repo & Umgebung provisionieren | ✅ Bootstrap-Skripte im Repo. ⏳ GitHub-Repo `markusfreise/flipper` anlegen und pushen |
 | TASK-02 | Laravel 13 + Vue 3 + batcave-ui v2 Grundgerüst | ✅ |
 | TASK-03 | Migrations, Models, Policy, Factories | ✅ |
 | TASK-04 | Auth, Rate-Limit, `user:create`/`user:password` | ✅ |
@@ -34,14 +34,14 @@ Stand: 2026-11-08, v1.0.0
 4. **Kamera und Galerie getrennt**: `capture="environment"` öffnet auf dem iPhone nur die Kamera, die Galerie wäre gesperrt.
 5. **Zusätzlich:** `POST /listings/{id}/retry`, `PATCH /photos/{id}` (Titelbild, Nahaufnahme), Spalten `status_before_failure` und `upload_path` (unverändertes Original neben dem EXIF-normalisierten JPEG).
 6. **Speicherort** `storage/app/private/listings` (Laravel-13-Default) statt `storage/app/listings`.
-7. **Deploy** baut in Release-Verzeichnissen und schaltet einen Symlink um (fail-closed). Der Webhook schreibt nur eine Trigger-Datei, systemd (`flohmarkt-deploy.path`) startet das Skript als root. So braucht www-data kein sudo.
+7. **Deploy** baut in Release-Verzeichnissen und schaltet einen Symlink um (fail-closed). Der Webhook schreibt nur eine Trigger-Datei, systemd (`flipper-deploy.path`) startet das Skript als root. So braucht www-data kein sudo.
 8. **Verpackungszuschlag** 1 cm/Seite + 200 g: Mit mehr wäre Luna (Referenzlauf: Päckchen S) in Päckchen M gerutscht.
 9. **Bilder werden direkt nach dem Freistellen komponiert**, nicht erst nach den Antworten. Spart Wartezeit, Schritt 2 zeigt schon die fertigen Freisteller.
 
 ## Live-Gang (TASK-26), was Markus tun muss
 
-1. Privates Repo `markusfreise/flohmarkt` anlegen und diesen Stand pushen (`main` und `develop`).
-2. Nichts: Das Bootstrap-Skript übernimmt `ANTHROPIC_API_KEY` aus der kachink-`.env` auf 114 nach `/opt/infra/.env`, falls er dort fehlt. Alle anderen Secrets werden generiert.
+1. Privates Repo `markusfreise/flipper` anlegen und diesen Stand pushen (`main` und `develop`).
+2. Nichts: Das Bootstrap-Skript übernimmt `ANTHROPIC_API_KEY` aus `/srv/www/lucius-app/.env` auf 114 (Fallback kachink) nach `/opt/infra/.env`, falls er dort fehlt. Alle anderen Secrets werden generiert.
 3. Auf dem Mac: `./_bootstrap/bootstrap-batcave.sh` (ggf. `CADDY_SNIPPET=<name>` setzen, falls das TLS-Snippet im Caddyfile anders heißt; das Skript validiert und rollt sonst zurück).
 4. Cloudflare Public Hostname setzen (einziger Handgriff, das Skript zeigt die Werte an).
 5. Optional `_project-assets/family.json` befüllen und `php8.3 artisan db:seed --class=FamilySeeder --force` auf 114.

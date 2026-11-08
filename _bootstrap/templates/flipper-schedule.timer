@@ -1,5 +1,5 @@
 [Unit]
-Description=Flohmarkt Scheduler (minütlich)
+Description=Flipper Scheduler (minütlich)
 
 [Timer]
 OnCalendar=*-*-* *:*:00

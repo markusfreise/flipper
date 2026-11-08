@@ -1,9 +1,0 @@
-[Unit]
-Description=Flohmarkt Scheduler
-
-[Service]
-Type=oneshot
-User=www-data
-Group=www-data
-WorkingDirectory=/srv/www/flohmarkt
-ExecStart=/usr/bin/php8.3 /srv/www/flohmarkt/artisan schedule:run

@@ -14,7 +14,7 @@ class ShippingAdvisor
      */
     public function advise(array $research, ?float $itemValueEur = null): array
     {
-        $cfg = config('flohmarkt.shipping');
+        $cfg = config('flipper.shipping');
         $dims = $research['dimensions_cm'] ?? null;
         $weight = is_numeric($research['weight_g'] ?? null) ? (float) $research['weight_g'] : null;
 

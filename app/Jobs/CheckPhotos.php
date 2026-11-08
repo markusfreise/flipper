@@ -27,7 +27,7 @@ class CheckPhotos extends ListingJob
         $check = $llm->json(PhotoCheckPrompt::system(), $content, PhotoCheckPrompt::schema())['data'];
 
         // Auflösung prüfen wir selbst: unter 2000 px an der langen Kante sind es keine Originale.
-        $minEdge = config('flohmarkt.min_original_edge_px');
+        $minEdge = config('flipper.min_original_edge_px');
         $lowRes = $listing->photos->contains(fn ($p) => max($p->width ?? 0, $p->height ?? 0) < $minEdge);
         $check['quality'] = ['low_res' => $lowRes, ...($check['quality'] ?? [])];
         $check['missing'] ??= [];

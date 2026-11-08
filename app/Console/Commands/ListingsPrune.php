@@ -13,7 +13,7 @@ class ListingsPrune extends Command
 {
     public function handle(): int
     {
-        $days = (int) ($this->option('days') ?: config('flohmarkt.retention_days'));
+        $days = (int) ($this->option('days') ?: config('flipper.retention_days'));
         $count = 0;
 
         Listing::where('created_at', '<', now()->subDays($days))->each(function (Listing $listing) use (&$count) {

@@ -128,7 +128,7 @@ class ListingController extends Controller
     {
         Gate::authorize('update', $listing);
         abort_unless($listing->status === 'ready' && $listing->text, 409, 'Der Text ist noch nicht fertig.');
-        abort_if($listing->text_revisions >= config('flohmarkt.max_text_revisions'), 429, 'Keine Überarbeitungen mehr übrig.');
+        abort_if($listing->text_revisions >= config('flipper.max_text_revisions'), 429, 'Keine Überarbeitungen mehr übrig.');
 
         $data = $request->validate(['hint' => ['required', 'string', 'max:1000']], ['hint.required' => 'Was soll anders werden?']);
 
@@ -152,7 +152,7 @@ class ListingController extends Controller
         Gate::authorize('view', $listing);
         abort_unless($listing->zip_path && Storage::disk('local')->exists($listing->zip_path), 404);
 
-        $name = 'inserat-'.(Str::slug($listing->product['name'] ?? '') ?: 'flohmarkt').'.zip';
+        $name = 'inserat-'.(Str::slug($listing->product['name'] ?? '') ?: 'flipper').'.zip';
 
         return response()->download(Storage::disk('local')->path($listing->zip_path), $name);
     }

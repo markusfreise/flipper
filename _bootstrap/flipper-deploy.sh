@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# Flohmarkt-Deploy auf LXC 114 → /usr/local/bin/flohmarkt-deploy.sh
+# Flipper-Deploy auf LXC 114 → /usr/local/bin/flipper-deploy.sh
 #
 # Fail-closed: Es wird in einem neuen Release-Verzeichnis gebaut und migriert.
-# Erst wenn alles grün ist, zeigt der Symlink /srv/www/flohmarkt auf das neue Release.
+# Erst wenn alles grün ist, zeigt der Symlink /srv/www/flipper auf das neue Release.
 # Bricht ein Schritt ab, läuft der alte Stand unverändert weiter.
 #
-#   flohmarkt-deploy.sh            # deployt origin/main, wenn es etwas Neues gibt
-#   flohmarkt-deploy.sh --force    # baut auch ohne neuen Commit
+#   flipper-deploy.sh            # deployt origin/main, wenn es etwas Neues gibt
+#   flipper-deploy.sh --force    # baut auch ohne neuen Commit
 set -euo pipefail
 
-APP=flohmarkt
-REPO="git@github.com:markusfreise/flohmarkt.git"
+APP=flipper
+REPO="git@github.com:markusfreise/flipper.git"
 BRANCH=main
 BASE=/srv/www
 LIVE="$BASE/$APP"                    # Symlink → aktuelles Release
@@ -32,21 +32,21 @@ set -a
 # shellcheck disable=SC1090
 source "$INFRA_ENV"
 set +a
-for v in FLOHMARKT_APP_KEY FLOHMARKT_DB_PASS ANTHROPIC_API_KEY FLOHMARKT_DEPLOY_SECRET; do
+for v in FLIPPER_APP_KEY FLIPPER_DB_PASS ANTHROPIC_API_KEY FLIPPER_DEPLOY_SECRET; do
   [[ -n "${!v:-}" ]] || { echo "FEHLT in $INFRA_ENV: $v" >&2; exit 1; }
 done
 export NTFY_URL="${NTFY_URL:-}"
 
 notify() { # $1 Titel, $2 Text, $3 Priorität
   [[ -n "$NTFY_URL" ]] || return 0
-  timeout 10 curl -fsS -H "Title: $1" -H "Priority: ${3:-default}" -H "Tags: flohmarkt" \
-    -d "$2" "${NTFY_URL%/}/flohmarkt" >/dev/null || true
+  timeout 10 curl -fsS -H "Title: $1" -H "Priority: ${3:-default}" -H "Tags: flipper" \
+    -d "$2" "${NTFY_URL%/}/flipper" >/dev/null || true
 }
 
 STEP="Start"
 on_error() {
   echo "Deploy FAILED bei: $STEP" >&2
-  notify "Flohmarkt: Deploy FAILED" "Schritt: $STEP. Alter Stand läuft weiter." high
+  notify "Flipper: Deploy FAILED" "Schritt: $STEP. Alter Stand läuft weiter." high
   [[ -n "${NEW:-}" && -d "${NEW:-}" && "$(readlink -f "$LIVE" 2>/dev/null)" != "$NEW" ]] && rm -rf "$NEW"
 }
 trap on_error ERR
@@ -74,7 +74,7 @@ timeout 120 git -C "$NEW" -c protocol.file.allow=always submodule update --init 
 STEP=".env rendern"
 mkdir -p "$SHARED/storage"
 TEMPLATE="$NEW/_bootstrap/templates/env.production"
-envsubst '${FLOHMARKT_APP_KEY} ${FLOHMARKT_DB_PASS} ${ANTHROPIC_API_KEY} ${NTFY_URL} ${FLOHMARKT_DEPLOY_SECRET}' \
+envsubst '${FLIPPER_APP_KEY} ${FLIPPER_DB_PASS} ${ANTHROPIC_API_KEY} ${NTFY_URL} ${FLIPPER_DEPLOY_SECRET}' \
   < "$TEMPLATE" > "$SHARED/.env.new"
 chmod 640 "$SHARED/.env.new"
 chown root:www-data "$SHARED/.env.new"
@@ -103,7 +103,7 @@ rm -rf node_modules
 
 STEP="Backup (pg_dump)"
 mkdir -p "$BACKUPS"
-PGPASSWORD="$FLOHMARKT_DB_PASS" timeout 300 pg_dump -h 192.168.2.110 -U flohmarkt_app -d flohmarkt \
+PGPASSWORD="$FLIPPER_DB_PASS" timeout 300 pg_dump -h 192.168.2.110 -U flipper_app -d flipper \
   -Fc -f "$BACKUPS/pre-deploy-$(date +%Y%m%d-%H%M%S)-${SHA:0:7}.dump"
 find "$BACKUPS" -name 'pre-deploy-*.dump' -mtime +30 -delete
 
@@ -123,7 +123,7 @@ systemctl reload php8.3-fpm
 $PHP "$LIVE/artisan" queue:restart
 
 STEP="Smoke-Test"
-code=$(timeout 15 curl -s -o /dev/null -w '%{http_code}' -H 'Host: flohmarkt.croeso.de' http://127.0.0.1/up || true)
+code=$(timeout 15 curl -s -o /dev/null -w '%{http_code}' -H 'Host: flipper.croeso.de' http://127.0.0.1/up || true)
 if [[ "$code" != "200" ]]; then
   PREV=$(ls -1dt "$RELEASES"/*/ | sed -n 2p)
   if [[ -n "$PREV" ]]; then
@@ -137,4 +137,4 @@ STEP="Aufräumen"
 ls -1dt "$RELEASES"/*/ | tail -n +$((KEEP + 1)) | xargs -r rm -rf
 trap - ERR
 echo "Deploy OK: $SHA"
-notify "Flohmarkt: Deploy OK" "$(git -C "$CACHE" log -1 --format='%h %s' "$SHA")"
+notify "Flipper: Deploy OK" "$(git -C "$CACHE" log -1 --format='%h %s' "$SHA")"

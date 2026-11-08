@@ -10,7 +10,7 @@ class DeployHookTest extends TestCase
     public function test_rejects_wrong_signature_and_queues_main_push(): void
     {
         Storage::fake('local');
-        config(['flohmarkt.deploy_secret' => 's3cret']);
+        config(['flipper.deploy_secret' => 's3cret']);
         $body = json_encode(['ref' => 'refs/heads/main', 'after' => 'abc123']);
 
         $this->call('POST', '/deploy-hook', [], [], [], ['HTTP_X-Hub-Signature-256' => 'sha256=falsch', 'CONTENT_TYPE' => 'application/json'], $body)

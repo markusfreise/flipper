@@ -1,0 +1,7 @@
+[Unit]
+Description=Flipper Deploy
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/flipper-deploy.sh
+TimeoutStartSec=900

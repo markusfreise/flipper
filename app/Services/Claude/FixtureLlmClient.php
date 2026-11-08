@@ -6,7 +6,7 @@ use App\Contracts\LlmClient;
 
 /**
  * Antwortet mit den Fixtures aus dem Luna-Referenzlauf (tests/Fixtures/luna).
- * Für Tests und für lokale Entwicklung ohne API-Key: FLOHMARKT_FAKE_AI=true.
+ * Für Tests und für lokale Entwicklung ohne API-Key: FLIPPER_FAKE_AI=true.
  */
 class FixtureLlmClient implements LlmClient
 {

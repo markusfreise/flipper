@@ -24,12 +24,12 @@ class PhotoController extends Controller
     public function store(Request $request, Listing $listing, ExifNormalizer $normalizer): ListingResource
     {
         Gate::authorize('update', $listing);
-        $max = config('flohmarkt.max_photos');
+        $max = config('flipper.max_photos');
         $free = $max - $listing->photos()->count();
 
         $request->validate([
             'photos' => ['required', 'array', 'min:1', 'max:'.max(1, $free)],
-            'photos.*' => ['required', 'file', 'max:'.config('flohmarkt.max_photo_kb'), 'extensions:jpg,jpeg,png,heic,heif,webp'],
+            'photos.*' => ['required', 'file', 'max:'.config('flipper.max_photo_kb'), 'extensions:jpg,jpeg,png,heic,heif,webp'],
             'kinds' => ['array'],
             'kinds.*' => [Rule::in(['overview', 'detail'])],
         ], [

@@ -12,15 +12,15 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: flohmarkt_app
+          POSTGRES_USER: flipper_app
           POSTGRES_PASSWORD: secret
-          POSTGRES_DB: flohmarkt_test
+          POSTGRES_DB: flipper_test
         ports: ['5432:5432']
         options: >-
           --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
     env:
       DB_HOST: 127.0.0.1
-      DB_USERNAME: flohmarkt_app
+      DB_USERNAME: flipper_app
       DB_PASSWORD: secret
     steps:
       # batcave-ui (privates Submodul) wird für PHPUnit und Vitest nicht gebraucht.

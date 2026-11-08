@@ -11,7 +11,7 @@ return [
     ],
 
     // Nur lokal: Luna-Fixtures statt Claude-API (kein API-Key nötig, keine Kosten).
-    'fake_ai' => (bool) env('FLOHMARKT_FAKE_AI', false),
+    'fake_ai' => (bool) env('FLIPPER_FAKE_AI', false),
 
     'rembg' => [
         'url' => env('REMBG_URL', 'http://127.0.0.1:7000'),
@@ -28,10 +28,10 @@ return [
 
     'ntfy' => [
         'url' => env('NTFY_URL'),
-        'topic' => env('NTFY_TOPIC', 'flohmarkt'),
+        'topic' => env('NTFY_TOPIC', 'flipper'),
     ],
 
-    'deploy_secret' => env('FLOHMARKT_DEPLOY_SECRET'),
+    'deploy_secret' => env('FLIPPER_DEPLOY_SECRET'),
 
     // Versand: Kleinanzeigen bietet eigene Versandarten an, der Käufer wählt und zahlt.
     'shipping' => [

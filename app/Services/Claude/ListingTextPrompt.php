@@ -46,7 +46,7 @@ TXT.Principles::TEXT;
         $pickup = ($answers['pickup'] ?? true) ? "Abholung in {$pickupLocation} möglich." : 'Keine Abholung, nur Versand.';
         $shipping = $platform === 'ebay'
             ? 'Versand: '.($pricing['shipping']['ebay']['service'] ?? 'DHL').(isset($pricing['shipping']['ebay']['price_eur']) ? ' für '.number_format($pricing['shipping']['ebay']['price_eur'], 2, ',', '').' €' : '').'.'
-            : 'Versand: Formulierung "oder du lässt es dir '.config('flohmarkt.shipping.kleinanzeigen_text').' schicken" (keinen eigenen DHL-Preis nennen).';
+            : 'Versand: Formulierung "oder du lässt es dir '.config('flipper.shipping.kleinanzeigen_text').' schicken" (keinen eigenen DHL-Preis nennen).';
 
         $platformLabel = ['kleinanzeigen' => 'Kleinanzeigen.de', 'ebay' => 'eBay', 'both' => 'Kleinanzeigen.de (zuerst) und eBay'][$platform] ?? 'Kleinanzeigen.de';
 

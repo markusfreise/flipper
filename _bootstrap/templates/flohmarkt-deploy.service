@@ -1,7 +1,0 @@
-[Unit]
-Description=Flohmarkt Deploy
-
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/flohmarkt-deploy.sh
-TimeoutStartSec=900

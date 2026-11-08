@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * GitHub-Webhook (Push auf main). Prüft die HMAC-Signatur und legt eine Trigger-Datei an;
- * die systemd-Path-Unit flohmarkt-deploy.path startet daraufhin flohmarkt-deploy.sh als root.
+ * die systemd-Path-Unit flipper-deploy.path startet daraufhin flipper-deploy.sh als root.
  */
 class DeployHookController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
-        $secret = config('flohmarkt.deploy_secret');
+        $secret = config('flipper.deploy_secret');
         abort_unless($secret, 404);
 
         $expected = 'sha256='.hash_hmac('sha256', $request->getContent(), $secret);

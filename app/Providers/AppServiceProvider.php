@@ -15,18 +15,18 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->bind(LlmClient::class, fn () => config('flohmarkt.fake_ai')
+        $this->app->bind(LlmClient::class, fn () => config('flipper.fake_ai')
             ? new FixtureLlmClient(base_path('tests/Fixtures/luna'))
             : new ClaudeClient(
-                config('flohmarkt.anthropic.api_key'),
-                config('flohmarkt.anthropic.model'),
-                (float) config('flohmarkt.anthropic.timeout'),
+                config('flipper.anthropic.api_key'),
+                config('flipper.anthropic.model'),
+                (float) config('flipper.anthropic.timeout'),
             ));
 
         $this->app->bind(RembgClient::class, fn () => new RembgClient(
-            config('flohmarkt.rembg.url'),
-            config('flohmarkt.rembg.model'),
-            (int) config('flohmarkt.rembg.timeout'),
+            config('flipper.rembg.url'),
+            config('flipper.rembg.model'),
+            (int) config('flipper.rembg.timeout'),
         ));
     }
 

@@ -1,6 +1,6 @@
-# Flohmarkt – Hinweise für Claude Code
+# Flipper – Hinweise für Claude Code
 
-Aus Handyfotos ein fertiges Kleinanzeigen-/eBay-Inserat. Spezifikation: `PRD_Flohmarkt_v1.0.0.md`, Stand und Abweichungen: `docs/backlog.md`.
+Aus Handyfotos ein fertiges Kleinanzeigen-/eBay-Inserat. Spezifikation: `PRD_Flipper_v1.0.0.md`, Stand und Abweichungen: `docs/backlog.md`.
 
 ## Sprache
 - UI, Fehlermeldungen, Commit-Messages: **Deutsch**. Code, DB-Felder, Klassennamen: Englisch.
@@ -18,9 +18,9 @@ Aus Handyfotos ein fertiges Kleinanzeigen-/eBay-Inserat. Spezifikation: `PRD_Flo
 
 ## Wichtige Stellen
 - KI: `App\Contracts\LlmClient` → `ClaudeClient` (offizielles SDK `anthropic-ai/sdk`). Prompts in `app/Services/Claude/*Prompt.php`, Grundsätze in `Principles.php`. Ohne Websuche: Structured Outputs (`outputConfig.format`), mit Websuche: JSON aus dem letzten Textblock.
-- `FLOHMARKT_FAKE_AI=true` → `FixtureLlmClient` mit `tests/Fixtures/luna/*.json` (lokal ohne Key, in Tests).
+- `FLIPPER_FAKE_AI=true` → `FixtureLlmClient` mit `tests/Fixtures/luna/*.json` (lokal ohne Key, in Tests).
 - Bilder: `ExifNormalizer` (EXIF, HEIC), `RembgClient`, `PhotoComposer` (Port von `listing_photos.py`: 1280×1600, Verlauf 246→214, Kontaktschatten).
-- Preise: `PriceAdvisor` (Median verkaufter Stücke, glatt gerundet, eBay +20 % auf ,90, 25 % Abschlag bei Gebrauchsspuren/Zubehör fehlt), Versand: `ShippingAdvisor` + `config/flohmarkt.php`.
+- Preise: `PriceAdvisor` (Median verkaufter Stücke, glatt gerundet, eBay +20 % auf ,90, 25 % Abschlag bei Gebrauchsspuren/Zubehör fehlt), Versand: `ShippingAdvisor` + `config/flipper.php`.
 - Dateien liegen auf der local-Disk unter `storage/app/private/listings/{uuid}/{originals,thumbs,cutouts,final,zip}` und werden über Web-Routen `/files/...` (Session-Auth) ausgeliefert.
 
 ## UI
@@ -31,7 +31,7 @@ Aus Handyfotos ein fertiges Kleinanzeigen-/eBay-Inserat. Spezifikation: `PRD_Flo
 ## Befehle
 ```bash
 composer run dev                  # Server + Queue + Vite
-php artisan test                  # PHPUnit (Postgres-DB flohmarkt_test)
+php artisan test                  # PHPUnit (Postgres-DB flipper_test)
 npm test                          # Vitest
 npm run build
 php artisan user:create "Name" mail@example.com
@@ -40,4 +40,4 @@ php artisan user:create "Name" mail@example.com
 - Job-Timeout 300 s, daher `DB_QUEUE_RETRY_AFTER=360`. Nicht unter das Timeout senken.
 
 ## Deploy
-Push auf `main` → GitHub-Webhook → `/deploy-hook` → systemd → `/usr/local/bin/flohmarkt-deploy.sh` (fail-closed, Releases + Symlink, pg_dump vor migrate, ntfy). Siehe `.claude/commands/deploy.md`.
+Push auf `main` → GitHub-Webhook → `/deploy-hook` → systemd → `/usr/local/bin/flipper-deploy.sh` (fail-closed, Releases + Symlink, pg_dump vor migrate, ntfy). Siehe `.claude/commands/deploy.md`.

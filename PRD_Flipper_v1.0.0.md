@@ -1,6 +1,6 @@
-# PRD: Flohmarkt
+# PRD: Flipper
 
-**Version:** 1.0.0 · **Datum:** 2026-11-08 · **Sprache:** DE (UI, Fehlermeldungen, Commits) / EN (Code, DB-Felder) · **Slug:** `flohmarkt` · **Status:** Umgesetzt (v1.0.0, siehe `docs/backlog.md` für Abweichungen)
+**Version:** 1.0.0 · **Datum:** 2026-11-08 · **Sprache:** DE (UI, Fehlermeldungen, Commits) / EN (Code, DB-Felder) · **Slug:** `flipper` · **Status:** Umgesetzt (v1.0.0, siehe `docs/backlog.md` für Abweichungen)
 
 **Ursprungs-Prompt (Markus, 8.11.2026):** „Ist es möglich, daraus eine ganz kleine Webapp zu bauen, die auch andere Familienmitglieder nutzen können: Bild(er)-Upload und dann ein Walkthrough mit fertigen Bildern und Texten am Ende für Copy/Paste? Schreibe ein PRD für eine einfache Web-App. Nutze batcave-ui und den Deployment-Skill. Ich möchte so wenig wie möglich damit zu tun haben. Code soll das danach tutti fertig bauen."
 
@@ -12,13 +12,13 @@
 
 | Feld | Wert |
 |---|---|
-| Projektname | Flohmarkt |
+| Projektname | Flipper |
 | Kurzbeschreibung | Aus Handyfotos eines Gegenstands entsteht in vier Schritten ein fertiges Kleinanzeigen-/eBay-Inserat: Produkt erkannt, Fotos freigestellt, Preis und Versand recherchiert, Text geschrieben. Am Ende: Bilder zum Download, Texte zum Kopieren. Das Einstellen selbst macht der Mensch. |
 | Zielgruppe | Familie Freise (4–6 Personen), eingeloggt mit eigenem Konto. Keine Öffentlichkeit. |
 | Vorlage | Claude-Skill `/verkaufen` (Referenzlauf Funko Pop Luna Lovegood, Kleinanzeigen-Anzeige 3565037782). Die App ist die Produktform dieser Skill ohne Chat. |
 | Projektstatus | Umsetzung v1.0.0 abgeschlossen, Live-Gang offen (TASK-26) |
 | Verantwortlich | Markus Freise (Owner), Umsetzung durch Claude Code |
-| Betrieb | Batcave, `https://flohmarkt.croeso.de` |
+| Betrieb | Batcave, `https://flipper.croeso.de` |
 
 ### Kernidee
 
@@ -59,26 +59,26 @@ Grundsätze, 1:1 aus der Skill übernommen und in Code gegossen:
 | KI | **Anthropic Claude API** über das offizielle PHP-SDK `anthropic-ai/sdk`, Vision + Web-Search-Tool (`web_search_20260209`). **[Umsetzung]** Default-Modell `claude-sonnet-5-5` statt `claude-sonnet-4-5` (wird am 30.11.2026 abgeschaltet), konfigurierbar per `ANTHROPIC_MODEL`. | Ein Anbieter für Erkennung, Foto-Check, Recherche, Preis und Text. Key von Markus hinterlegt (`ANTHROPIC_API_KEY` in `/opt/infra/.env`). |
 | Freistellen | **rembg** als HTTP-Dienst (`danielgatis/rembg` Docker-Image, `rembg s`) auf LXC 111, Modell `isnet-general-use` | Laravel ruft `POST http://192.168.2.111:7000/api/remove`. Lokal: gleicher Container via Docker Desktop oder `pip install "rembg[cpu,cli]" && rembg s`. |
 | Bildverarbeitung | Intervention Image v4 (GD) + GD für die Komposition | Freisteller auf Verlaufshintergrund mit Kontaktschatten (Port von `listing_photos.py`), 1280×1600 (4:5). |
-| Datenbank | **PostgreSQL 16 auf LXC 110** (`192.168.2.110:5432`), DB `flohmarkt`, Rolle `flohmarkt_app` | `jsonb` für Recherche-Ergebnisse. |
+| Datenbank | **PostgreSQL 16 auf LXC 110** (`192.168.2.110:5432`), DB `flipper`, Rolle `flipper_app` | `jsonb` für Recherche-Ergebnisse. |
 | Dateispeicher | Lokale Disk LXC 114, `storage/app/private/listings/{uuid}/` **[Umsetzung: Laravel-13-Default-Root `app/private`]** | Originale, Freisteller, fertige JPGs, ZIP. |
-| Queue | Laravel Queue, Driver `database`, systemd-Unit `flohmarkt-queue` | Alle KI- und Bildjobs asynchron, Frontend pollt. |
+| Queue | Laravel Queue, Driver `database`, systemd-Unit `flipper-queue` | Alle KI- und Bildjobs asynchron, Frontend pollt. |
 | Scheduler | `schedule:run` via systemd-Timer | Tägliches Löschen von Inseraten älter als 90 Tage inkl. Dateien. |
-| Benachrichtigung | ntfy (`NTFY_URL` aus `/opt/infra/.env`), Topic `flohmarkt` | Deploy OK/FAILED, fehlgeschlagene Jobs. |
-| Lokale Umgebung | Laravel Valet (`flohmarkt.test`) + Vite + lokale Postgres (`flohmarkt_local`) | Muss ohne Batcave laufen. rembg lokal via Docker. Ohne API-Key: `FLOHMARKT_FAKE_AI=true`. |
+| Benachrichtigung | ntfy (`NTFY_URL` aus `/opt/infra/.env`), Topic `flipper` | Deploy OK/FAILED, fehlgeschlagene Jobs. |
+| Lokale Umgebung | Laravel Valet (`flipper.test`) + Vite + lokale Postgres (`flipper_local`) | Muss ohne Batcave laufen. rembg lokal via Docker. Ohne API-Key: `FLIPPER_FAKE_AI=true`. |
 | Testing | PHPUnit (Feature/Unit), Vitest + Vue Test Utils | Jobs mit Fixture-Antworten aus dem Luna-Referenzlauf (`tests/Fixtures/luna/`). |
-| Versionierung | Git, GitHub privat `markusfreise/flohmarkt` | `main` = live, `develop` = Arbeit. |
+| Versionierung | Git, GitHub privat `markusfreise/flipper` | `main` = live, `develop` = Arbeit. |
 
 ---
 
 ## 3. Projektstruktur
 
 ```
-flohmarkt/
-├── PRD_Flohmarkt_v1.0.0.md, CLAUDE.md, README.md
+flipper/
+├── PRD_Flipper_v1.0.0.md, CLAUDE.md, README.md
 ├── .claude/commands/{next-task,prd-check,deploy}.md
 ├── docs/backlog.md
-├── _bootstrap/{bootstrap-batcave.sh,bootstrap-local.sh,flohmarkt-deploy.sh,templates/}
-├── _project-assets -> …/Dropbox-Personal/Coding/flohmarkt   (Symlink, gitignored)
+├── _bootstrap/{bootstrap-batcave.sh,bootstrap-local.sh,flipper-deploy.sh,templates/}
+├── _project-assets -> …/Dropbox-Personal/Coding/flipper   (Symlink, gitignored)
 ├── app/
 │   ├── Contracts/LlmClient.php
 │   ├── Models/{User,Listing,ListingPhoto}.php
@@ -94,7 +94,7 @@ flohmarkt/
 │   │   └── Pricing/{PriceAdvisor,ShippingAdvisor}.php
 │   ├── Support/{ListingExport,Ntfy}.php
 │   └── Console/Commands/{UserCreate,UserPassword,ListingsPrune}.php
-├── config/flohmarkt.php
+├── config/flipper.php
 ├── database/{migrations,factories,seeders/FamilySeeder.php}
 ├── resources/
 │   ├── batcave-ui/                    (Git-Submodul, v2.0.0)
@@ -109,7 +109,7 @@ flohmarkt/
 
 ## 4. Git-Workflow & Repo
 
-- Repo: `git@github.com:markusfreise/flohmarkt.git` (privat)
+- Repo: `git@github.com:markusfreise/flipper.git` (privat)
 - Branches: `main` (live auf Batcave) ← `develop` ← `feature/TASK-xx-kurzname`; `hotfix/*` von `main`
 - Commits: `<typ>(TASK-xx): <beschreibung>` — feat, fix, chore, refactor, test, docs
 - `.gitignore`: `_project-assets`, `/vendor`, `/node_modules`, `/public/build`, Listing-Dateien, `.env`, `.DS_Store`
@@ -118,9 +118,9 @@ flohmarkt/
 
 ## 5. Umgebungen & .env
 
-Zwei Umgebungen: `local` (Mac) und `prod` (Batcave). Vorlage: `.env.example`; prod-Vorlage `_bootstrap/templates/env.production`, gerendert vom Deploy-Skript aus `/opt/infra/.env` (`FLOHMARKT_DB_PASS`, `FLOHMARKT_APP_KEY`, `FLOHMARKT_DEPLOY_SECRET`, `ANTHROPIC_API_KEY`, `NTFY_URL`). Nichts hardcodiert.
+Zwei Umgebungen: `local` (Mac) und `prod` (Batcave). Vorlage: `.env.example`; prod-Vorlage `_bootstrap/templates/env.production`, gerendert vom Deploy-Skript aus `/opt/infra/.env` (`FLIPPER_DB_PASS`, `FLIPPER_APP_KEY`, `FLIPPER_DEPLOY_SECRET`, `ANTHROPIC_API_KEY`, `NTFY_URL`). Nichts hardcodiert.
 
-Datenbank auf 110: `CREATE DATABASE flohmarkt ENCODING 'UTF8' LC_COLLATE 'de_DE.UTF-8' LC_CTYPE 'de_DE.UTF-8' TEMPLATE template0;`
+Datenbank auf 110: `CREATE DATABASE flipper ENCODING 'UTF8' LC_COLLATE 'de_DE.UTF-8' LC_CTYPE 'de_DE.UTF-8' TEMPLATE template0;`
 
 ---
 
@@ -184,9 +184,9 @@ Wie im Original-PRD (Login, Liste, Wizard mit Schrittleiste und vier Karten, Feh
 
 ## 15. Hosting & Deployment (Batcave)
 
-LXC 114 (nginx, php8.3-fpm), Postgres auf 110, rembg auf 111, Caddy + cloudflared auf 113. Einrichtung: `_bootstrap/bootstrap-batcave.sh` (idempotent, fail-closed). Einziger manueller Schritt: Cloudflare Public Hostname `flohmarkt.croeso.de` → `HTTPS 192.168.2.113:443`, Origin Server Name `flohmarkt.croeso.de`.
+LXC 114 (nginx, php8.3-fpm), Postgres auf 110, rembg auf 111, Caddy + cloudflared auf 113. Einrichtung: `_bootstrap/bootstrap-batcave.sh` (idempotent, fail-closed). Einziger manueller Schritt: Cloudflare Public Hostname `flipper.croeso.de` → `HTTPS 192.168.2.113:443`, Origin Server Name `flipper.croeso.de`.
 
-Deploy: `/usr/local/bin/flohmarkt-deploy.sh` — baut in `/srv/www/flohmarkt-releases/<sha>`, `pg_dump` vor `migrate`, schaltet den Symlink `/srv/www/flohmarkt` erst nach Erfolg um, Smoke-Test mit Rollback, ntfy OK/FAILED. Auslöser: GitHub-Webhook `POST /deploy-hook` (HMAC) schreibt eine Trigger-Datei, `flohmarkt-deploy.path` startet den Deploy als root.
+Deploy: `/usr/local/bin/flipper-deploy.sh` — baut in `/srv/www/flipper-releases/<sha>`, `pg_dump` vor `migrate`, schaltet den Symlink `/srv/www/flipper` erst nach Erfolg um, Smoke-Test mit Rollback, ntfy OK/FAILED. Auslöser: GitHub-Webhook `POST /deploy-hook` (HMAC) schreibt eine Trigger-Datei, `flipper-deploy.path` startet den Deploy als root.
 
 Kosten: ≈ 3–8 Cent pro Inserat. Monatliches Limit im Anthropic-Dashboard setzen (TODO-05).
 

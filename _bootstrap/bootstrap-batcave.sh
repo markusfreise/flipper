@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Einmalige Einrichtung von Flohmarkt auf der Batcave (PRD §15). Idempotent, fail-closed.
+# Einmalige Einrichtung von Flipper auf der Batcave (PRD §15). Idempotent, fail-closed.
 # Läuft auf dem Mac (oder jedem Rechner mit SSH-Root-Zugang zu den LXCs):
 #
 #   ./_bootstrap/bootstrap-batcave.sh
@@ -16,7 +16,7 @@ REMBG_DIR=${REMBG_DIR:-/opt/stacks/rembg}
 CADDY_SNIPPET=${CADDY_SNIPPET:-cloudflare_tls}
 ADMIN_NAME=${ADMIN_NAME:-Markus}
 ADMIN_EMAIL=${ADMIN_EMAIL:-markus@freise.de}
-DOMAIN=flohmarkt.croeso.de
+DOMAIN=flipper.croeso.de
 HERE="$(cd "$(dirname "$0")" && pwd)"
 T="$HERE/templates"
 
@@ -35,40 +35,40 @@ f=/opt/infra/.env
 install -d -m 750 /opt/infra
 touch "$f"; chmod 600 "$f"
 add() { grep -q "^$1=" "$f" || echo "$1=$2" >> "$f"; }
-add FLOHMARKT_DB_PASS "$(openssl rand -hex 24)"
-add FLOHMARKT_DEPLOY_SECRET "$(openssl rand -hex 32)"
-add FLOHMARKT_APP_KEY "base64:$(openssl rand -base64 32)"
-# Anthropic-Key von kachink übernehmen, falls er hier noch fehlt (Wert wird nie ausgegeben).
+add FLIPPER_DB_PASS "$(openssl rand -hex 24)"
+add FLIPPER_DEPLOY_SECRET "$(openssl rand -hex 32)"
+add FLIPPER_APP_KEY "base64:$(openssl rand -base64 32)"
+# Anthropic-Key von lucius übernehmen (Fallback kachink), falls er hier noch fehlt. Wert wird nie ausgegeben.
 if ! grep -q '^ANTHROPIC_API_KEY=.\+' "$f"; then
   key=""
-  for src in /srv/www/kachink/.env /srv/www/kachink-shared/.env /srv/www/kaachink/.env /srv/www/kaching/.env \
-             $(ls -d /srv/www/*kachink*/.env /srv/www/*kaching*/.env 2>/dev/null); do
+  for src in /srv/www/lucius-app/.env /srv/www/lucius-app/current/.env /srv/www/lucius-app-shared/.env /srv/www/lucius/.env $(ls -d /srv/www/*lucius*/.env 2>/dev/null) \
+             /srv/www/kachink/.env /srv/www/kachink-shared/.env $(ls -d /srv/www/*kachink*/.env 2>/dev/null); do
     [[ -f "$src" ]] || continue
     key=$(grep -m1 -E '^ANTHROPIC_API_KEY=' "$src" | cut -d= -f2- | tr -d "\"' \t\r")
     if [[ -n "$key" ]]; then echo "ANTHROPIC_API_KEY von $src übernommen."; break; fi
   done
-  [[ -n "$key" ]] || { echo "ANTHROPIC_API_KEY weder in $f noch bei kachink gefunden. Bitte in $f eintragen." >&2; exit 1; }
+  [[ -n "$key" ]] || { echo "ANTHROPIC_API_KEY weder in $f noch bei lucius/kachink gefunden. Bitte in $f eintragen." >&2; exit 1; }
   echo "ANTHROPIC_API_KEY=$key" >> "$f"
 fi
 grep -q '^NTFY_URL=' "$f" || echo "Hinweis: NTFY_URL fehlt in $f, Meldungen bleiben aus." >&2
 REMOTE
-DB_PASS=$(SSH "$WEB_HOST" "grep '^FLOHMARKT_DB_PASS=' /opt/infra/.env | cut -d= -f2-")
+DB_PASS=$(SSH "$WEB_HOST" "grep '^FLIPPER_DB_PASS=' /opt/infra/.env | cut -d= -f2-")
 
-say "2/10 Datenbank flohmarkt auf 110"
+say "2/10 Datenbank flipper auf 110"
 printf '%s' "$DB_PASS" | SSH "$DB_HOST" bash -c 'set -euo pipefail
 pass=$(cat)
 cd /tmp
 q() { sudo -u postgres psql -v ON_ERROR_STOP=1 -tAc "$1"; }
-if [[ -z "$(q "SELECT 1 FROM pg_roles WHERE rolname='"'"'flohmarkt_app'"'"'")" ]]; then
-  sudo -u postgres psql -v ON_ERROR_STOP=1 -v pw="$pass" -c "CREATE ROLE flohmarkt_app LOGIN PASSWORD :'"'"'pw'"'"'"
+if [[ -z "$(q "SELECT 1 FROM pg_roles WHERE rolname='"'"'flipper_app'"'"'")" ]]; then
+  sudo -u postgres psql -v ON_ERROR_STOP=1 -v pw="$pass" -c "CREATE ROLE flipper_app LOGIN PASSWORD :'"'"'pw'"'"'"
 else
-  sudo -u postgres psql -v ON_ERROR_STOP=1 -v pw="$pass" -c "ALTER ROLE flohmarkt_app PASSWORD :'"'"'pw'"'"'"
+  sudo -u postgres psql -v ON_ERROR_STOP=1 -v pw="$pass" -c "ALTER ROLE flipper_app PASSWORD :'"'"'pw'"'"'"
 fi
-if [[ -z "$(q "SELECT 1 FROM pg_database WHERE datname='"'"'flohmarkt'"'"'")" ]]; then
-  q "CREATE DATABASE flohmarkt OWNER flohmarkt_app ENCODING '"'"'UTF8'"'"' LC_COLLATE '"'"'de_DE.UTF-8'"'"' LC_CTYPE '"'"'de_DE.UTF-8'"'"' TEMPLATE template0"
+if [[ -z "$(q "SELECT 1 FROM pg_database WHERE datname='"'"'flipper'"'"'")" ]]; then
+  q "CREATE DATABASE flipper OWNER flipper_app ENCODING '"'"'UTF8'"'"' LC_COLLATE '"'"'de_DE.UTF-8'"'"' LC_CTYPE '"'"'de_DE.UTF-8'"'"' TEMPLATE template0"
 fi
 echo "DB ok"'
-echo "pg_hba.conf auf 110 muss 192.168.2.114 für flohmarkt/flohmarkt_app erlauben (wie bei den anderen Apps)."
+echo "pg_hba.conf auf 110 muss 192.168.2.114 für flipper/flipper_app erlauben (wie bei den anderen Apps)."
 
 say "1/10 rembg auf 111"
 SSH "$DOCKER_HOST_SSH" "mkdir -p $REMBG_DIR"
@@ -83,33 +83,33 @@ timeout 600 apt-get install -y -q php8.3-fpm php8.3-cli php8.3-pgsql php8.3-gd p
   php8.3-xml php8.3-curl php8.3-intl libheif-examples gettext-base postgresql-client >/dev/null
 command -v npm >/dev/null || { echo "npm fehlt auf 114" >&2; exit 1; }
 command -v composer >/dev/null || { echo "composer fehlt auf 114" >&2; exit 1; }
-install -d -o www-data -g www-data /srv/www/flohmarkt-releases /srv/www/flohmarkt-shared
-install -d /var/backups/flohmarkt
+install -d -o www-data -g www-data /srv/www/flipper-releases /srv/www/flipper-shared
+install -d /var/backups/flipper
 REMOTE
-for f in flohmarkt-queue.service flohmarkt-schedule.service flohmarkt-schedule.timer flohmarkt-deploy.path flohmarkt-deploy.service; do
+for f in flipper-queue.service flipper-schedule.service flipper-schedule.timer flipper-deploy.path flipper-deploy.service; do
   scp -q "$T/$f" "$WEB_HOST:/etc/systemd/system/$f"
 done
-scp -q "$HERE/flohmarkt-deploy.sh" "$WEB_HOST:/usr/local/bin/flohmarkt-deploy.sh"
-SSH "$WEB_HOST" "chmod 755 /usr/local/bin/flohmarkt-deploy.sh"
+scp -q "$HERE/flipper-deploy.sh" "$WEB_HOST:/usr/local/bin/flipper-deploy.sh"
+SSH "$WEB_HOST" "chmod 755 /usr/local/bin/flipper-deploy.sh"
 
 say "9/10 Erster Deploy"
-SSH "$WEB_HOST" "/usr/local/bin/flohmarkt-deploy.sh --force"
+SSH "$WEB_HOST" "/usr/local/bin/flipper-deploy.sh --force"
 
 say "4/10 nginx-Vhost auf 114"
-scp -q "$T/nginx-flohmarkt.conf" "$WEB_HOST:/etc/nginx/sites-available/flohmarkt"
-SSH "$WEB_HOST" "ln -sfn /etc/nginx/sites-available/flohmarkt /etc/nginx/sites-enabled/flohmarkt && nginx -t && systemctl reload nginx"
-SSH "$WEB_HOST" "systemctl daemon-reload && systemctl enable --now flohmarkt-queue.service flohmarkt-schedule.timer flohmarkt-deploy.path"
+scp -q "$T/nginx-flipper.conf" "$WEB_HOST:/etc/nginx/sites-available/flipper"
+SSH "$WEB_HOST" "ln -sfn /etc/nginx/sites-available/flipper /etc/nginx/sites-enabled/flipper && nginx -t && systemctl reload nginx"
+SSH "$WEB_HOST" "systemctl daemon-reload && systemctl enable --now flipper-queue.service flipper-schedule.timer flipper-deploy.path"
 
 say "5/10 Caddy auf 113"
-CADDY_BLOCK=$(sed "s/\${CADDY_SNIPPET}/$CADDY_SNIPPET/" "$T/caddy-flohmarkt.caddy")
+CADDY_BLOCK=$(sed "s/\${CADDY_SNIPPET}/$CADDY_SNIPPET/" "$T/caddy-flipper.caddy")
 printf '%s\n' "$CADDY_BLOCK" | SSH "$CADDY_HOST" bash -c 'set -euo pipefail
 f=/etc/caddy/Caddyfile
 block=$(cat)
-if grep -q "^flohmarkt.croeso.de" "$f"; then echo "Caddy-Block existiert schon"; exit 0; fi
-cp "$f" "$f.bak-flohmarkt"
+if grep -q "^flipper.croeso.de" "$f"; then echo "Caddy-Block existiert schon"; exit 0; fi
+cp "$f" "$f.bak-flipper"
 printf "\n%s\n" "$block" >> "$f"
 if ! caddy validate --config "$f" --adapter caddyfile >/dev/null 2>&1; then
-  mv "$f.bak-flohmarkt" "$f"
+  mv "$f.bak-flipper" "$f"
   echo "Caddyfile ungültig (Snippet-Name prüfen: CADDY_SNIPPET). Zurückgerollt." >&2
   exit 1
 fi
@@ -117,15 +117,15 @@ systemctl restart caddy   # restart, nicht reload: Admin-API ist aus
 echo "Caddy ok"'
 
 say "10/10 Konten anlegen"
-SSH "$WEB_HOST" "cd /srv/www/flohmarkt && sudo -u www-data php8.3 artisan db:seed --class=FamilySeeder --force --no-interaction"
-SSH "$WEB_HOST" "cd /srv/www/flohmarkt && sudo -u www-data php8.3 artisan user:create '$ADMIN_NAME' '$ADMIN_EMAIL' --admin" || true
+SSH "$WEB_HOST" "cd /srv/www/flipper && sudo -u www-data php8.3 artisan db:seed --class=FamilySeeder --force --no-interaction"
+SSH "$WEB_HOST" "cd /srv/www/flipper && sudo -u www-data php8.3 artisan user:create '$ADMIN_NAME' '$ADMIN_EMAIL' --admin" || true
 
 say "GitHub-Webhook"
-SECRET=$(SSH "$WEB_HOST" "grep '^FLOHMARKT_DEPLOY_SECRET=' /opt/infra/.env | cut -d= -f2-")
-if command -v gh >/dev/null && ! gh api repos/markusfreise/flohmarkt/hooks --jq '.[].config.url' 2>/dev/null | grep -q "$DOMAIN/deploy-hook"; then
-  gh api repos/markusfreise/flohmarkt/hooks -f name=web -F active=true -f 'events[]=push' \
+SECRET=$(SSH "$WEB_HOST" "grep '^FLIPPER_DEPLOY_SECRET=' /opt/infra/.env | cut -d= -f2-")
+if command -v gh >/dev/null && ! gh api repos/markusfreise/flipper/hooks --jq '.[].config.url' 2>/dev/null | grep -q "$DOMAIN/deploy-hook"; then
+  gh api repos/markusfreise/flipper/hooks -f name=web -F active=true -f 'events[]=push' \
     -f config[url]="https://$DOMAIN/deploy-hook" -f config[content_type]=json -f config[secret]="$SECRET" >/dev/null \
-    && echo "Webhook angelegt." || echo "Webhook bitte von Hand anlegen (URL https://$DOMAIN/deploy-hook, Secret = FLOHMARKT_DEPLOY_SECRET aus /opt/infra/.env)."
+    && echo "Webhook angelegt." || echo "Webhook bitte von Hand anlegen (URL https://$DOMAIN/deploy-hook, Secret = FLIPPER_DEPLOY_SECRET aus /opt/infra/.env)."
 fi
 
 cat <<TXT
@@ -133,7 +133,7 @@ cat <<TXT
 ────────────────────────────────────────────────────────────────────
  GATE (manuell, einmalig): Cloudflare Zero Trust → Networks → Tunnels
    → Tunnel der Batcave → Public Hostname hinzufügen
-     Subdomain: flohmarkt   Domain: croeso.de
+     Subdomain: flipper   Domain: croeso.de
      Service:   HTTPS 192.168.2.113:443
      Additional settings → TLS → Origin Server Name: $DOMAIN
  Danach prüfen:  curl -sI https://$DOMAIN/up   → HTTP 200

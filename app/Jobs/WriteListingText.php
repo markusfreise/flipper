@@ -36,7 +36,7 @@ class WriteListingText extends ListingJob
 
         $result = $llm->json(
             ListingTextPrompt::system(),
-            [['type' => 'text', 'text' => ListingTextPrompt::instruction($listing, config('flohmarkt.pickup_location'), $this->hint)]],
+            [['type' => 'text', 'text' => ListingTextPrompt::instruction($listing, config('flipper.pickup_location'), $this->hint)]],
             ListingTextPrompt::schema(),
         )['data'];
 

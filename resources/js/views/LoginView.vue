@@ -34,7 +34,7 @@ async function submit() {
         <section class="card login__card">
             <div class="card__header">
                 <div>
-                    <h1 class="card__title heading-2">Flohmarkt</h1>
+                    <h1 class="card__title heading-2">Flipper</h1>
                     <p class="muted small">Aus Handyfotos ein fertiges Inserat.</p>
                 </div>
             </div>
