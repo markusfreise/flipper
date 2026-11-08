@@ -1,0 +1,17 @@
+{
+  "features": [
+    {"text": "Funko Pop! Vinylfigur aus der Harry-Potter-Reihe, Nummer 14", "source_url": "https://funko.com/luna-lovegood/6569.html"},
+    {"text": "Erschienen 2016, Höhe ca. 9,5 cm", "source_url": "https://www.pricecharting.com/game/funko-pop-harry-potter/luna-lovegood-14"},
+    {"text": "Luna mit Radieschen-Ohrringen und Zauberstab", "source_url": "https://funko.com/luna-lovegood/6569.html"}
+  ],
+  "sold_prices": [
+    {"price_eur": 10, "date": "2026-10", "source_url": "https://www.ebay.de/sch/i.html?_nkw=funko+luna+14&LH_Sold=1", "note": null},
+    {"price_eur": 12, "date": "2026-10", "source_url": "https://www.ebay.de/sch/i.html?_nkw=funko+luna+14&LH_Sold=1", "note": null},
+    {"price_eur": 13, "date": "2026-09", "source_url": "https://www.pricecharting.com/game/funko-pop-harry-potter/luna-lovegood-14", "note": "US-Preis, Orientierung"},
+    {"price_eur": 11.5, "date": "2026-09", "source_url": "https://www.kleinanzeigen.de/s-funko-luna/k0", "note": null}
+  ],
+  "price_median_eur": 11.75,
+  "dimensions_cm": {"length": 16.5, "width": 11.5, "height": 9},
+  "weight_g": 180,
+  "notes": "Maße der Box aus Händlerangaben."
+}

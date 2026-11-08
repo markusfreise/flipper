@@ -1,0 +1,12 @@
+{
+  "missing": [
+    {"what": "Rückseite der Box", "why": "Käufer wollen das Label und den Barcode sehen"},
+    {"what": "Nahaufnahme obere linke Ecke der Box", "why": "Dort ist eine Knickstelle zu ahnen"}
+  ],
+  "tips": [
+    "Heller Karton als Hohlkehle hinter und unter die Box, damit die Unterlage nicht durchs Sichtfenster scheint.",
+    "Box 20–30 cm vor die Rückwand stellen, Tageslicht von der Seite."
+  ],
+  "quality": {"busy_background": true, "see_through": true, "blurry": false, "poor_light": false},
+  "visible_defects": ["leichte Lagerspuren an den Kanten der Box"]
+}
