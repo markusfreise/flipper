@@ -41,7 +41,7 @@ Stand: 2026-11-08, v1.0.0
 ## Live-Gang (TASK-26), was Markus tun muss
 
 1. Privates Repo `markusfreise/flohmarkt` anlegen und diesen Stand pushen (`main` und `develop`).
-2. `ANTHROPIC_API_KEY` in `/opt/infra/.env` auf 114 eintragen (der Rest wird generiert).
+2. Nichts: Das Bootstrap-Skript übernimmt `ANTHROPIC_API_KEY` aus der kachink-`.env` auf 114 nach `/opt/infra/.env`, falls er dort fehlt. Alle anderen Secrets werden generiert.
 3. Auf dem Mac: `./_bootstrap/bootstrap-batcave.sh` (ggf. `CADDY_SNIPPET=<name>` setzen, falls das TLS-Snippet im Caddyfile anders heißt; das Skript validiert und rollt sonst zurück).
 4. Cloudflare Public Hostname setzen (einziger Handgriff, das Skript zeigt die Werte an).
 5. Optional `_project-assets/family.json` befüllen und `php8.3 artisan db:seed --class=FamilySeeder --force` auf 114.

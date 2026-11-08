@@ -38,7 +38,18 @@ add() { grep -q "^$1=" "$f" || echo "$1=$2" >> "$f"; }
 add FLOHMARKT_DB_PASS "$(openssl rand -hex 24)"
 add FLOHMARKT_DEPLOY_SECRET "$(openssl rand -hex 32)"
 add FLOHMARKT_APP_KEY "base64:$(openssl rand -base64 32)"
-grep -q '^ANTHROPIC_API_KEY=.\+' "$f" || { echo "ANTHROPIC_API_KEY fehlt in $f (Markus hinterlegt ihn)." >&2; exit 1; }
+# Anthropic-Key von kachink übernehmen, falls er hier noch fehlt (Wert wird nie ausgegeben).
+if ! grep -q '^ANTHROPIC_API_KEY=.\+' "$f"; then
+  key=""
+  for src in /srv/www/kachink/.env /srv/www/kachink-shared/.env /srv/www/kaachink/.env /srv/www/kaching/.env \
+             $(ls -d /srv/www/*kachink*/.env /srv/www/*kaching*/.env 2>/dev/null); do
+    [[ -f "$src" ]] || continue
+    key=$(grep -m1 -E '^ANTHROPIC_API_KEY=' "$src" | cut -d= -f2- | tr -d "\"' \t\r")
+    if [[ -n "$key" ]]; then echo "ANTHROPIC_API_KEY von $src übernommen."; break; fi
+  done
+  [[ -n "$key" ]] || { echo "ANTHROPIC_API_KEY weder in $f noch bei kachink gefunden. Bitte in $f eintragen." >&2; exit 1; }
+  echo "ANTHROPIC_API_KEY=$key" >> "$f"
+fi
 grep -q '^NTFY_URL=' "$f" || echo "Hinweis: NTFY_URL fehlt in $f, Meldungen bleiben aus." >&2
 REMOTE
 DB_PASS=$(SSH "$WEB_HOST" "grep '^FLOHMARKT_DB_PASS=' /opt/infra/.env | cut -d= -f2-")
