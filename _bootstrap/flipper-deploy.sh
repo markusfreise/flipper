@@ -2,7 +2,7 @@
 # Flipper-Deploy auf LXC 114 → /usr/local/bin/flipper-deploy.sh
 #
 # Fail-closed: Es wird in einem neuen Release-Verzeichnis gebaut und migriert.
-# Erst wenn alles grün ist, zeigt der Symlink /srv/www/flipper auf das neue Release.
+# Erst wenn alles grün ist, zeigt der Symlink /var/www/flipper auf das neue Release.
 # Bricht ein Schritt ab, läuft der alte Stand unverändert weiter.
 #
 #   flipper-deploy.sh            # deployt origin/main, wenn es etwas Neues gibt
@@ -10,9 +10,11 @@
 set -euo pipefail
 
 APP=flipper
-REPO="git@github.com:markusfreise/flipper.git"
+# Lesende Deploy-Keys je Repo, Aliasse in /root/.ssh/config auf 114
+REPO="github-flipper:markusfreise/flipper.git"
+UI_REPO="github-batcave-ui:markusfreise/batcave-ui.git"
 BRANCH=main
-BASE=/srv/www
+BASE=/var/www
 LIVE="$BASE/$APP"                    # Symlink → aktuelles Release
 RELEASES="$BASE/$APP-releases"
 SHARED="$BASE/$APP-shared"           # storage/ und .env, über Releases hinweg
@@ -23,6 +25,10 @@ PHP=php8.3
 KEEP=5
 LOCK=/run/lock/$APP-deploy.lock
 FORCE=${1:-}
+
+# Läuft auch aus systemd (flipper-deploy.service), dort fehlen HOME und ein brauchbarer PATH.
+export HOME="${HOME:-/root}"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 exec 9>"$LOCK"
 flock -n 9 || { echo "Deploy läuft bereits."; exit 0; }
@@ -69,7 +75,9 @@ rm -rf "$NEW"
 mkdir -p "$RELEASES"
 timeout 120 git clone --quiet --shared "$CACHE" "$NEW"
 git -C "$NEW" checkout --quiet "$SHA"
-timeout 120 git -C "$NEW" -c protocol.file.allow=always submodule update --init --recursive
+git -C "$NEW" submodule init
+git -C "$NEW" config submodule.resources/batcave-ui.url "$UI_REPO"
+timeout 120 git -C "$NEW" submodule update --recursive
 
 STEP=".env rendern"
 mkdir -p "$SHARED/storage"

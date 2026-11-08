@@ -2,7 +2,7 @@
 Description=Flipper Deploy-Trigger (vom GitHub-Webhook geschrieben)
 
 [Path]
-PathChanged=/srv/www/flipper-shared/storage/app/private/deploy/trigger
+PathChanged=/var/www/flipper-shared/storage/app/private/deploy/trigger
 Unit=flipper-deploy.service
 
 [Install]

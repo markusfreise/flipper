@@ -1,10 +1,11 @@
-# Service-Block für den Docker-Compose-Stack auf LXC 111.
+# Stack /opt/stacks/rembg auf LXC 111, Port an die LAN-IP gebunden wie die übrigen Stacks.
 services:
   rembg:
     image: danielgatis/rembg:latest
+    container_name: rembg
     command: s --host 0.0.0.0 --port 7000
     ports:
-      - "7000:7000"
+      - "192.168.2.111:7000:7000"
     volumes:
       - rembg-models:/root/.u2net
     environment:

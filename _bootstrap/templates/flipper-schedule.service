@@ -5,5 +5,5 @@ Description=Flipper Scheduler
 Type=oneshot
 User=www-data
 Group=www-data
-WorkingDirectory=/srv/www/flipper
-ExecStart=/usr/bin/php8.3 /srv/www/flipper/artisan schedule:run
+WorkingDirectory=/var/www/flipper
+ExecStart=/usr/bin/php8.3 /var/www/flipper/artisan schedule:run
