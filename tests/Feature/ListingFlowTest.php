@@ -117,7 +117,8 @@ class ListingFlowTest extends TestCase
         $this->assertSame('questions', $data['status']);
         $this->assertSame('user', $data['product']['source']);
         $this->assertNotEmpty($data['research']['sources']);
-        $this->assertSame(5, $this->llm->calls[2]['webSearches']);
+        $this->assertSame(config('flipper.anthropic.max_web_searches'), $this->llm->calls[2]['webSearches']);
+        $this->assertGreaterThanOrEqual(20, $this->llm->calls[2]['webSearches']);
 
         // Schritt 3: Antworten → Text → ZIP → ready
         $api->putJson("/api/v1/listings/{$listing->id}/answers", ['platform' => 'both'])
