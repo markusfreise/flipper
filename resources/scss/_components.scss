@@ -1,0 +1,491 @@
+@use "batcave-ui/scss/abstracts" as *;
+
+// App-eigene Blöcke. Wird einer davon generisch, wandert er nach batcave-ui.
+
+// ---------- Kopfzeile (ohne Sidebar) ----------
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap);
+    max-width: var(--site-width);
+    margin: 0 auto;
+    padding: var(--gap-05x) var(--gap);
+    padding-top: max(var(--gap-05x), env(safe-area-inset-top));
+  }
+
+  &__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-05x);
+    font-weight: 700;
+    font-size: var(--fs-medium);
+    color: var(--c-head);
+    text-decoration: none;
+  }
+
+  &__logo {
+    display: inline-flex;
+    color: var(--c-corporate);
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-05x);
+    min-width: 0;
+  }
+
+  &__name {
+    @include truncate;
+    color: var(--c-copy-light);
+    font-size: var(--fs-small);
+  }
+}
+
+// ---------- Schrittleiste ----------
+.wizard-steps {
+  margin-bottom: var(--gap);
+
+  &__list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--gap-05x);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-025x);
+    width: 100%;
+    padding: var(--gap-05x) var(--gap-025x);
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-medium);
+    color: var(--c-copy-light);
+    font-size: var(--fs-small);
+    cursor: pointer;
+
+    @include tablet {
+      flex-direction: row;
+      justify-content: center;
+    }
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.6;
+    }
+
+    &--done {
+      color: var(--c-accent);
+      border-color: var(--c-accent-soft);
+      background: var(--c-accent-soft);
+    }
+
+    &--active {
+      color: var(--c-corporate);
+      border-color: var(--c-corporate);
+      background: var(--c-corporate-soft);
+      font-weight: 600;
+    }
+  }
+
+  &__num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: pxtorem(24);
+    height: pxtorem(24);
+    border-radius: 50%;
+    background: var(--c-surface-3);
+    color: var(--c-copy);
+    font-weight: 600;
+    font-size: var(--fs-mini);
+
+    .wizard-steps__item--done & {
+      background: var(--c-accent);
+      color: var(--c-on-fill);
+    }
+
+    .wizard-steps__item--active & {
+      background: var(--c-corporate);
+      color: var(--c-on-fill);
+    }
+  }
+}
+
+// ---------- Dropzone ----------
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap-05x);
+  padding: var(--gap-15x) var(--gap);
+  border: 2px dashed var(--c-border-strong);
+  border-radius: var(--radius);
+  background: var(--c-surface-2);
+  text-align: center;
+  transition: border-color 0.12s, background 0.12s;
+
+  &--active {
+    border-color: var(--c-corporate);
+    background: var(--c-corporate-soft);
+  }
+
+  &--disabled {
+    opacity: 0.6;
+  }
+
+  &__icon {
+    color: var(--c-corporate);
+  }
+
+  &__title {
+    font-weight: 600;
+    color: var(--c-head);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--gap-05x);
+  }
+
+  &__button {
+    cursor: pointer;
+
+    &:focus-within {
+      @include focus-ring;
+    }
+  }
+
+  &__hint {
+    font-size: var(--fs-mini);
+    color: var(--c-copy-light);
+  }
+}
+
+// ---------- Foto-Raster ----------
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--photo-thumb), 1fr));
+  gap: var(--gap-05x);
+  list-style: none;
+  padding: 0;
+  margin: var(--gap) 0 0;
+
+  &__item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-025x);
+    padding: var(--gap-025x);
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-medium);
+
+    &--detail {
+      border-color: var(--c-warning);
+    }
+  }
+
+  &__img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius-small);
+    background: var(--c-surface-2);
+
+    &--placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--gap-05x);
+      font-size: var(--fs-mini);
+      color: var(--c-copy-light);
+      word-break: break-all;
+    }
+  }
+
+  &__tag {
+    position: absolute;
+    top: var(--gap-05x);
+    left: var(--gap-05x);
+  }
+
+  &__remove {
+    position: absolute;
+    top: var(--gap-025x);
+    right: var(--gap-025x);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: pxtorem(32);
+    height: pxtorem(32);
+    border: 0;
+    border-radius: 50%;
+    background: var(--c-overlay);
+    color: var(--c-white);
+    font-size: var(--fs-large);
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  &__toggle {
+    font-size: var(--fs-mini);
+  }
+}
+
+.photo-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+
+  &__progress {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-025x);
+  }
+}
+
+// ---------- Foto-Tipps & -Check ----------
+.photo-tips {
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-medium);
+  background: var(--c-surface);
+
+  &__summary {
+    padding: var(--gap-075x) var(--gap);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-05x);
+    margin: 0;
+    padding: 0 var(--gap) var(--gap) var(--gap-2x);
+    font-size: var(--fs-small);
+  }
+}
+
+.photo-check {
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-025x);
+    margin: var(--gap-025x) 0 0;
+    padding-left: var(--gap-15x);
+    font-size: var(--fs-small);
+  }
+}
+
+// ---------- Fortschritt ----------
+.progress-lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-05x);
+  list-style: none;
+  margin: var(--gap) 0;
+  padding: 0;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-05x);
+
+    &--done {
+      color: var(--c-copy-light);
+    }
+  }
+
+  &__icon {
+    flex: none;
+    width: pxtorem(18);
+    text-align: center;
+    color: var(--c-accent);
+  }
+}
+
+// ---------- Kopierfeld ----------
+.copy-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-05x);
+  padding-bottom: var(--gap);
+  border-bottom: 1px solid var(--c-border);
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-05x);
+  }
+
+  &__label {
+    font-size: var(--fs-small);
+    font-weight: 600;
+    color: var(--c-head);
+  }
+
+  &__feedback {
+    margin-left: auto;
+  }
+
+  &__button {
+    flex: none;
+  }
+
+  &__value {
+    padding: var(--gap-075x);
+    background: var(--c-surface-2);
+    border-radius: var(--radius-medium);
+    font-size: var(--fs-medium);
+    overflow-wrap: anywhere;
+    user-select: text;
+
+    &--multiline {
+      white-space: pre-wrap;
+      font-size: var(--fs-copy);
+      line-height: 1.55;
+    }
+  }
+}
+
+// ---------- Liste der Inserate ----------
+.listing-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-05x);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.listing-card {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-05x);
+  padding-right: var(--gap-05x);
+
+  &__link {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: var(--gap);
+    min-width: 0;
+    padding: var(--gap-075x);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  &__thumb {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: pxtorem(64);
+    height: pxtorem(80);
+    overflow: hidden;
+    border-radius: var(--radius-small);
+    background: var(--c-surface-2);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-025x);
+    min-width: 0;
+  }
+
+  &__title {
+    font-weight: 600;
+    color: var(--c-head);
+    @include truncate;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-05x);
+  }
+
+  &__delete {
+    flex: none;
+  }
+}
+
+// ---------- Ergebnisbilder ----------
+.result-images {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--gap);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  @include tablet {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-025x);
+  }
+
+  &__frame {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-medium);
+    background: var(--c-surface-2);
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  &__pending {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap-05x);
+    height: 100%;
+    font-size: var(--fs-small);
+    color: var(--c-copy-light);
+  }
+
+  &__cover {
+    position: absolute;
+    top: var(--gap-05x);
+    left: var(--gap-05x);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-025x);
+  }
+}

@@ -1,0 +1,7 @@
+// 1. batcave-ui v2 (Git-Submodul resources/batcave-ui, Tag v2.0.0), einmal laden
+@use "batcave-ui/scss/index";
+
+// 2. eigene base_resources-Dateien
+@use "properties";
+@use "components";
+@use "views";

@@ -1,0 +1,158 @@
+@use "batcave-ui/scss/abstracts" as *;
+
+// Seitenspezifisches Layout. Mobile first, einspaltig.
+
+.site-main {
+  max-width: var(--site-width);
+  padding-bottom: calc(var(--gap-3x) + env(safe-area-inset-bottom));
+}
+
+// ---------- Login ----------
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap);
+  max-width: pxtorem(400);
+  margin: 8vh auto 0;
+
+  &__brand {
+    color: var(--c-corporate);
+  }
+
+  &__card {
+    width: 100%;
+  }
+}
+
+// ---------- Wizard ----------
+.wizard {
+  &__title {
+    margin-top: var(--gap-025x);
+    overflow-wrap: anywhere;
+  }
+
+  &__card {
+    margin-bottom: var(--gap);
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+  }
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid var(--c-border);
+  margin: 0;
+}
+
+.error-card {
+  border-color: var(--c-danger);
+  background: var(--c-danger-soft);
+}
+
+// ---------- Schritt 3 ----------
+.question {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-05x);
+  margin: 0;
+  padding: 0;
+  border: 0;
+
+  &__legend {
+    margin-bottom: var(--gap-05x);
+    font-weight: 600;
+    color: var(--c-head);
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-05x);
+  }
+
+  &__options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--gap-05x);
+
+    @include tablet {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    &--row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--gap);
+    }
+
+    .form__check {
+      min-height: pxtorem(32);
+    }
+  }
+
+  &__autosize {
+    overflow: hidden;
+  }
+}
+
+// ---------- Schritt 4 ----------
+.copy-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.price-meta {
+  margin-top: calc(var(--gap) * -0.5);
+
+  &__sources {
+    margin: var(--gap-025x) 0 0;
+    padding-left: var(--gap-15x);
+  }
+}
+
+.invented-list {
+  margin: var(--gap-025x) 0 0;
+  padding-left: var(--gap-15x);
+}
+
+.revise {
+  gap: var(--gap-025x);
+
+  &__row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-05x);
+
+    @include tablet {
+      flex-direction: row;
+    }
+  }
+}
+
+.finish {
+  &__steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-025x);
+    margin: var(--gap-05x) 0 0;
+    padding-left: var(--gap-15x);
+  }
+}
+
+// Der Reset entfernt Aufzählungszeichen; in Fließtext-Listen wollen wir sie.
+.photo-check__list,
+.photo-tips__list,
+.invented-list,
+.price-meta__sources {
+  list-style: disc;
+}
+
+.finish__steps {
+  list-style: decimal;
+}
