@@ -24,6 +24,9 @@ class RemoveBackground implements ShouldQueue
     /** Eigene Queue: Der Worker nimmt "default" (KI-Schritte) immer zuerst, Bilder laufen dazwischen. */
     public const QUEUE = 'images';
 
+    /** Lange Kante der Kopie, die an rembg geht. */
+    public const INPUT_EDGE = 2000;
+
     public function __construct(public string $photoId)
     {
         $this->onQueue(self::QUEUE);
@@ -44,8 +47,13 @@ class RemoveBackground implements ShouldQueue
 
         $photo->update(['status' => 'cutting']);
 
+        // Verkleinerte Kopie an rembg: Alpha-Matting auf 12-MP-Originalen braucht mehrere GB RAM
+        // und hat den Docker-Host zum Swappen gebracht. Das Endbild ist ohnehin nur 1280x1600.
+        $input = tempnam(sys_get_temp_dir(), 'rembg').'.jpg';
+
         try {
-            $png = $rembg->removeBackground($photo->absolute($photo->original_path));
+            $normalizer->resizedJpeg($photo->absolute($photo->original_path), $input, self::INPUT_EDGE);
+            $png = $rembg->removeBackground($input);
             $path = $photo->listing->directory().sprintf('/cutouts/%02d.png', $photo->position);
             Storage::disk('local')->put($path, $png);
             $photo->update(['cutout_path' => $path, 'status' => 'cut']);
@@ -54,6 +62,9 @@ class RemoveBackground implements ShouldQueue
             self::useOriginal($photo, $normalizer, 'cutout_failed');
 
             return;
+        } finally {
+            @unlink($input);
+            @unlink(substr($input, 0, -4));
         }
 
         ComposeListingPhoto::dispatch($photo->id);

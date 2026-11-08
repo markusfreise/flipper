@@ -11,6 +11,10 @@ services:
     environment:
       - U2NET_HOME=/root/.u2net
     restart: unless-stopped
+    # Obergrenze, damit rembg nie den ganzen Docker-Container (und damit die Batcave) in den Swap zieht.
+    # Flipper schickt höchstens 2000 px, dafür reichen 1,5 GB.
+    mem_limit: 1536m
+    memswap_limit: 1536m
 
 volumes:
   rembg-models:
